@@ -21,7 +21,7 @@ export default function Navbar({ likedCount, bookmarkedCount }: NavbarProps) {
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg border-2 border-[rgb(30,30,40)] flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               Quote<span className="text-primary">Verse</span>
             </h1>
           </Link>
@@ -58,8 +58,9 @@ export default function Navbar({ likedCount, bookmarkedCount }: NavbarProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 border-2 border-[rgb(30,30,40)] rounded-lg hover:shadow-soft-sm transition-all"
+            className="md:hidden p-2 border-2 border-[rgb(30,30,40)] rounded-lg hover:shadow-soft-sm transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -67,11 +68,11 @@ export default function Navbar({ likedCount, bookmarkedCount }: NavbarProps) {
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden pb-4 border-t-2 border-[rgb(30,30,40)] pt-4">
+          <div className="md:hidden pb-4 border-t-2 border-[rgb(30,30,40)] pt-4 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-3">
               <Link
                 href="/"
-                className="flex items-center gap-2 px-4 py-3 font-semibold bg-background hover:bg-gray-100 rounded-lg border-2 border-[rgb(30,30,40)] transition-all"
+                className="flex items-center gap-2 px-4 py-3 font-semibold bg-background hover:bg-gray-100 rounded-lg border-2 border-[rgb(30,30,40)] transition-all min-h-[48px]"
                 onClick={() => setMenuOpen(false)}
               >
                 <Home className="w-4 h-4" />
@@ -79,7 +80,7 @@ export default function Navbar({ likedCount, bookmarkedCount }: NavbarProps) {
               </Link>
               <Link
                 href="/saved"
-                className="flex items-center gap-2 px-4 py-3 font-semibold bg-background hover:bg-gray-100 rounded-lg border-2 border-[rgb(30,30,40)] transition-all"
+                className="flex items-center gap-2 px-4 py-3 font-semibold bg-background hover:bg-gray-100 rounded-lg border-2 border-[rgb(30,30,40)] transition-all min-h-[48px]"
                 onClick={() => setMenuOpen(false)}
               >
                 <Library className="w-4 h-4" />
@@ -87,11 +88,11 @@ export default function Navbar({ likedCount, bookmarkedCount }: NavbarProps) {
               </Link>
               
               <div className="flex gap-2 mt-2">
-                <div className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-primary-light border-2 border-[rgb(30,30,40)] rounded-lg">
+                <div className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-primary-light border-2 border-[rgb(30,30,40)] rounded-lg min-h-[48px]">
                   <Heart className="w-4 h-4 text-primary" />
                   <span className="text-sm font-bold">{likedCount} Liked</span>
                 </div>
-                <div className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-secondary-light border-2 border-[rgb(30,30,40)] rounded-lg">
+                <div className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-secondary-light border-2 border-[rgb(30,30,40)] rounded-lg min-h-[48px]">
                   <Bookmark className="w-4 h-4 text-foreground" />
                   <span className="text-sm font-bold">{bookmarkedCount} Saved</span>
                 </div>
