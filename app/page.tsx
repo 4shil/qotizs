@@ -15,6 +15,23 @@ interface Quote {
 
 type SortOption = 'recent' | 'popular' | 'random';
 
+// Retry logic with exponential backoff
+async function fetchWithRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  delay: number = 1000
+): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+    }
+  }
+  throw new Error('Max retries reached');
+}
+
 export default function Home() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,14 +40,28 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [likedQuotes, setLikedQuotes] = useState<Set<string>>(new Set());
   const [bookmarkedQuotes, setBookmarkedQuotes] = useState<Set<string>>(new Set());
+  const [mounted, setMounted] = useState(false);
 
   // Load saved preferences from localStorage
   useEffect(() => {
+    setMounted(true);
     const savedLikes = localStorage.getItem('likedQuotes');
     const savedBookmarks = localStorage.getItem('bookmarkedQuotes');
     
-    if (savedLikes) setLikedQuotes(new Set(JSON.parse(savedLikes)));
-    if (savedBookmarks) setBookmarkedQuotes(new Set(JSON.parse(savedBookmarks)));
+    if (savedLikes) {
+      try {
+        setLikedQuotes(new Set(JSON.parse(savedLikes)));
+      } catch (e) {
+        console.error('Error parsing likes:', e);
+      }
+    }
+    if (savedBookmarks) {
+      try {
+        setBookmarkedQuotes(new Set(JSON.parse(savedBookmarks)));
+      } catch (e) {
+        console.error('Error parsing bookmarks:', e);
+      }
+    }
   }, []);
 
   const fetchQuotes = async () => {
@@ -41,22 +72,28 @@ export default function Home() {
       const apiKey = process.env.NEXT_PUBLIC_API_NINJAS_KEY;
       
       if (!apiKey || apiKey === 'your_api_key_here') {
-        setError('API key not configured. Please add your API Ninjas key to .env.local');
+        setError('API key not configured. Please add your API Ninjas key to environment variables.');
         setLoading(false);
         return;
       }
 
-      // Fetch multiple times to get variety since we can't filter by category
+      // Fetch multiple times with retry logic to get variety
       const responses = await Promise.all([
-        axios.get('https://api.api-ninjas.com/v1/quotes', {
-          headers: { 'X-Api-Key': apiKey },
-        }),
-        axios.get('https://api.api-ninjas.com/v1/quotes', {
-          headers: { 'X-Api-Key': apiKey },
-        }),
-        axios.get('https://api.api-ninjas.com/v1/quotes', {
-          headers: { 'X-Api-Key': apiKey },
-        })
+        fetchWithRetry(() => 
+          axios.get('https://api.api-ninjas.com/v1/quotes', {
+            headers: { 'X-Api-Key': apiKey },
+          })
+        ),
+        fetchWithRetry(() =>
+          axios.get('https://api.api-ninjas.com/v1/quotes', {
+            headers: { 'X-Api-Key': apiKey },
+          })
+        ),
+        fetchWithRetry(() =>
+          axios.get('https://api.api-ninjas.com/v1/quotes', {
+            headers: { 'X-Api-Key': apiKey },
+          })
+        )
       ]);
       
       const allQuotes = [
@@ -76,12 +113,16 @@ export default function Home() {
         if (err.response?.status === 401) {
           setError('Invalid API key. Please check your API Ninjas key.');
         } else if (err.response?.status === 429) {
-          setError('Rate limit exceeded. Please try again later.');
+          setError('Rate limit exceeded. Please try again in a few moments.');
+        } else if (err.response?.status === 403) {
+          setError('Access forbidden. Please check your API key permissions.');
+        } else if (!err.response) {
+          setError('Network error. Please check your connection and try again.');
         } else {
           setError(`API Error: ${err.message}`);
         }
       } else {
-        setError('Failed to fetch quotes. Please check your connection.');
+        setError('Failed to fetch quotes. Please try again.');
       }
     }
     
@@ -96,14 +137,16 @@ export default function Home() {
       const apiKey = process.env.NEXT_PUBLIC_API_NINJAS_KEY;
       
       if (!apiKey || apiKey === 'your_api_key_here') {
-        setError('API key not configured. Please add your API Ninjas key to .env.local');
+        setError('API key not configured. Please add your API Ninjas key to environment variables.');
         setLoading(false);
         return;
       }
 
-      const { data } = await axios.get('https://api.api-ninjas.com/v1/quotes', {
-        headers: { 'X-Api-Key': apiKey },
-      });
+      const { data } = await fetchWithRetry(() =>
+        axios.get('https://api.api-ninjas.com/v1/quotes', {
+          headers: { 'X-Api-Key': apiKey },
+        })
+      );
       
       if (data && data.length > 0) {
         setQuotes(data);
@@ -119,8 +162,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchQuotes();
-  }, []);
+    if (mounted) {
+      fetchQuotes();
+    }
+  }, [mounted]);
 
   const handleLikeToggle = (quoteText: string) => {
     const newLikes = new Set(likedQuotes);
@@ -167,6 +212,10 @@ export default function Home() {
 
   // Get unique categories from fetched quotes
   const categories = Array.from(new Set(quotes.map(q => q.category))).sort();
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -230,18 +279,16 @@ export default function Home() {
             <div className="card-soft-brutalism bg-red-50 border-red-500 p-8">
               <div className="flex items-start gap-4">
                 <AlertCircle className="w-8 h-8 text-red-500 flex-shrink-0" />
-                <div>
-                  <h3 className="text-xl font-bold text-red-900 mb-2">API Configuration Required</h3>
+                <div className="flex-grow">
+                  <h3 className="text-xl font-bold text-red-900 mb-2">Error Loading Quotes</h3>
                   <p className="text-red-700 mb-4">{error}</p>
-                  <div className="bg-white border-2 border-red-300 rounded-lg p-4">
-                    <p className="font-bold text-sm mb-2">To fix this:</p>
-                    <ol className="text-sm space-y-1 list-decimal list-inside">
-                      <li>Visit <a href="https://api-ninjas.com" target="_blank" rel="noopener" className="text-blue-600 underline">api-ninjas.com</a></li>
-                      <li>Sign up for a free account</li>
-                      <li>Get your API key from the dashboard</li>
-                      <li>Add it to environment variables</li>
-                    </ol>
-                  </div>
+                  <button
+                    onClick={fetchQuotes}
+                    className="btn-primary"
+                  >
+                    <RefreshCw className="w-4 h-4 inline mr-2" />
+                    Try Again
+                  </button>
                 </div>
               </div>
             </div>
@@ -333,7 +380,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {sortedQuotes.map((quote, index) => (
                   <QuoteCard 
-                    key={index} 
+                    key={`${quote.quote.slice(0, 20)}-${index}`}
                     quote={quote}
                     isLiked={likedQuotes.has(quote.quote)}
                     isBookmarked={bookmarkedQuotes.has(quote.quote)}
