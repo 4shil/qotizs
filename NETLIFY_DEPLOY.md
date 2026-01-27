@@ -1,79 +1,80 @@
-# Deploy QuoteVerse to Netlify
+# Deploy QuoteVerse to Netlify with API Key
 
-## Quick Deployment (Recommended)
-
-### Option 1: Deploy via Netlify Web Dashboard (Easiest)
-
-1. **Go to Netlify:**
-   - Visit: https://app.netlify.com/
-   - Sign up or login (GitHub login is easiest)
-
-2. **Import Project:**
-   - Click "Add new site" → "Import an existing project"
-   - Choose "Deploy with GitHub"
-   - Select your `quotes-app` repository
-
-3. **Configure Build:**
-   - Build command: `npm run build`
-   - Publish directory: `.next`
-   - Click "Deploy site"
-
-4. **Done!**
-   - Your site will be live at: `https://[random-name].netlify.app`
-   - You can change the name in Site Settings
-
-### Option 2: Deploy via CLI (From Your Machine)
-
-If you want to deploy from command line:
-
-```bash
-# Install Netlify CLI
-npm install -g netlify-cli
-
-# Login to Netlify
-netlify login
-
-# Navigate to project
-cd /home/ubuntu/clawd/quotes-app
-
-# Deploy
-netlify deploy --prod
+## Your API Ninjas Key
+```
+18Set8gp6my00OwcLwwFSQo0CFioitxGbUrydRey
 ```
 
-Follow the prompts:
-- Create a new site? Yes
-- Site name: quotesash (or whatever you want)
-- Build command: npm run build
-- Publish directory: .next
+## Quick Deployment Steps
 
-## Configuration
+### Step 1: Go to Netlify
 
-The project already includes `netlify.toml` with proper Next.js configuration.
+Visit: **https://app.netlify.com/**
 
-### Environment Variables (Optional)
+- Sign up or login (GitHub login recommended)
 
-If you want to add the API Ninjas key on Netlify:
+### Step 2: Import from GitHub
 
-1. Go to: Site Settings → Environment Variables
-2. Add: `NEXT_PUBLIC_API_NINJAS_KEY` = your API key
-3. Redeploy
+1. Click **"Add new site"** → **"Import an existing project"**
+2. Choose **"Deploy with GitHub"**
+3. Select repository: **`4shil/quotes-app`**
 
-## Why Netlify?
+### Step 3: Configure Build Settings
 
-- ✅ No authentication issues
-- ✅ Free tier is generous
-- ✅ Fast global CDN
-- ✅ Automatic HTTPS
-- ✅ Easy to use
-- ✅ Great Next.js support
+- **Build command:** `npm run build`
+- **Publish directory:** `.next`
+- **Base directory:** (leave empty)
 
-## After Deployment
+### Step 4: Add Environment Variable
 
-Once deployed, update the GitHub repository with your new URL:
+**IMPORTANT:** Before deploying, add your API key:
 
-```bash
-# Update repo website link
-gh repo edit --homepage "https://your-site.netlify.app"
-```
+1. Click **"Show advanced"** or **"Add environment variables"**
+2. Add variable:
+   - **Key:** `NEXT_PUBLIC_API_NINJAS_KEY`
+   - **Value:** `18Set8gp6my00OwcLwwFSQo0CFioitxGbUrydRey`
 
-And update README.md with the new live demo URL.
+### Step 5: Deploy
+
+Click **"Deploy site"**
+
+Wait 2-3 minutes for build to complete.
+
+### Step 6: Your Site is Live!
+
+Your site will be at: `https://[random-name].netlify.app`
+
+**Optional:** Change site name:
+1. Go to Site Settings → Site details
+2. Click "Change site name"
+3. Enter: `quotesash` (or whatever you want)
+4. Your URL becomes: `https://quotesash.netlify.app`
+
+## Important Notes
+
+### API Tier Information
+
+Your API key is on the **free tier**, which means:
+- ✅ Random quotes work
+- ❌ Category filtering requires premium
+- ✅ Search by text/author works
+- ✅ 50,000 requests/month
+
+The app has been updated to work perfectly with the free tier!
+
+### After Deployment
+
+1. Test your site - it should load quotes immediately
+2. Update GitHub repo with new URL:
+   ```bash
+   gh repo edit --homepage "https://your-site.netlify.app"
+   ```
+
+## Troubleshooting
+
+**If quotes don't load:**
+1. Check Site Settings → Environment variables
+2. Make sure `NEXT_PUBLIC_API_NINJAS_KEY` is set correctly
+3. Trigger a new deployment (Deploys → Trigger deploy)
+
+**Need help?** Let me know!
