@@ -379,7 +379,7 @@ export default function Home() {
       <footer className="py-8 px-4 border-t-3 border-[rgb(30,30,40)] bg-white">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-foreground/60 font-medium">
-            Made with care • QuoteVerse 2026
+            QuoteVerse 2026
           </p>
         </div>
       </footer>

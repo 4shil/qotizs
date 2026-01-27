@@ -1,4 +1,4 @@
-# QuoteVerse 🌟
+# QuoteVerse
 
 > A complete, professional quote generator application with soft Neo Brutalism design
 
@@ -6,18 +6,16 @@
 [![GitHub](https://img.shields.io/badge/github-repo-blue?style=for-the-badge&logo=github)](https://github.com/4shil/quotes-app)
 [![Vercel](https://img.shields.io/badge/deployed-vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/4shils-projects/quotes-app)
 
-![QuoteVerse Preview](https://via.placeholder.com/1200x600/FF6B6B/FFFFFF?text=QuoteVerse+%7C+Discover+Wisdom)
+## Features
 
-## ✨ Features
-
-### 🎯 Core Functionality
+### Core Functionality
 
 - **10+ Categories** - Inspirational, Life, Happiness, Love, Success, Motivation, Wisdom, Humor, Friendship, Family
 - **Real-Time Search** - Find quotes by text or author instantly
 - **Smart Sorting** - Sort by Recent, Popular, or Random
 - **Random Generator** - Get instant inspiration with random quotes
 
-### 💾 User Features
+### User Features
 
 - **Like Quotes** - Heart icon with persistent storage
 - **Bookmark Favorites** - Save quotes for later
@@ -26,7 +24,7 @@
 - **Your Collection** - Dedicated page for saved quotes
 - **Separate Tabs** - View Liked and Bookmarked quotes separately
 
-### 📊 Stats Dashboard
+### Stats Dashboard
 
 - Total quotes viewed
 - Liked quotes counter
@@ -34,7 +32,7 @@
 - Combined collection size
 - Live stats in navigation bar
 
-### 🎨 Design
+### Design
 
 - **Soft Neo Brutalism** aesthetic
 - **Soft Color Palette** - Coral, yellow, sky blue
@@ -44,11 +42,11 @@
 - **Fully Responsive** - Mobile-first design
 - **Clean Typography** - Inter font from Google
 
-## 🚀 Live Demo
+## Live Demo
 
 **Production Site:** [https://quotes-gfv75ey3w-4shils-projects.vercel.app](https://quotes-gfv75ey3w-4shils-projects.vercel.app)
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Technology | Purpose |
 |------------|---------|
@@ -60,7 +58,7 @@
 | **localStorage** | Persistent user data |
 | **Vercel** | Deployment platform |
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -100,7 +98,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 **Note:** The app works without an API key using built-in demo quotes.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 quotes-app/
@@ -121,7 +119,7 @@ quotes-app/
 └── package.json                # Dependencies and scripts
 ```
 
-## 🎯 Available Scripts
+## Available Scripts
 
 ```bash
 npm run dev       # Start development server (localhost:3000)
@@ -130,7 +128,7 @@ npm run start     # Start production server
 npm run lint      # Run ESLint checks
 ```
 
-## 🌈 Design System
+## Design System
 
 ### Color Palette
 
@@ -156,9 +154,9 @@ Success:      #90EE90 (rgb(144, 238, 144)) - Light Green
 - **Shadow Offset:** 4-6px for depth
 - **Card Padding:** 24px (1.5rem)
 
-## 📱 Features Breakdown
+## Features Breakdown
 
-### Homepage (`/`)
+### Homepage
 
 - Hero section with gradient background
 - Stats dashboard (4 metrics)
@@ -179,7 +177,7 @@ Success:      #90EE90 (rgb(144, 238, 144)) - Light Green
 - Share menu (social platforms)
 - Smooth hover animations
 
-### Saved Collection Page (`/saved`)
+### Saved Collection Page
 
 - Navigation back to home
 - Tabs for Bookmarked/Liked quotes
@@ -196,7 +194,7 @@ Success:      #90EE90 (rgb(144, 238, 144)) - Light Green
 - Responsive mobile menu
 - Sticky positioning
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -216,27 +214,15 @@ Custom utility classes are defined in `globals.css`:
 - `.badge-soft-brutalism` - Rounded badge/pill
 - `.input-soft-brutalism` - Styled input fields
 
-## 🌐 Browser Support
+## Browser Support
 
-- ✅ Chrome (latest)
-- ✅ Firefox (latest)
-- ✅ Safari (latest)
-- ✅ Edge (latest)
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
-## 📝 Development Process
-
-Built in **7 structured commits**:
-
-1. Enhanced homepage with local storage
-2. Working share functionality
-3. Live stats in navbar
-4. Stats dashboard component
-5. Saved collection page
-6. Navigation system
-7. Complete documentation
-
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how:
 
@@ -246,11 +232,11 @@ Contributions are welcome! Here's how:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 MIT License - feel free to use this project for learning or commercial purposes.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Design Inspiration:** Neo Brutalism movement
 - **Quote Data:** [API Ninjas](https://api-ninjas.com)
@@ -258,7 +244,7 @@ MIT License - feel free to use this project for learning or commercial purposes.
 - **Fonts:** [Google Fonts - Inter](https://fonts.google.com/specimen/Inter)
 - **Deployment:** [Vercel](https://vercel.com)
 
-## 📞 Contact & Links
+## Contact & Links
 
 - **GitHub Repository:** [github.com/4shil/quotes-app](https://github.com/4shil/quotes-app)
 - **Live Demo:** [quotes-gfv75ey3w-4shils-projects.vercel.app](https://quotes-gfv75ey3w-4shils-projects.vercel.app)
@@ -268,8 +254,8 @@ MIT License - feel free to use this project for learning or commercial purposes.
 
 <div align="center">
 
-**Built with ❤️ by @4shil**
+**Built by @4shil**
 
-[⬆ Back to Top](#quoteverse-)
+[Back to Top](#quoteverse)
 
 </div>
