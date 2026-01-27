@@ -9,9 +9,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "QuoteVerse - Soft Neo Brutalism Quote Generator",
-  description: "Discover inspiring quotes with a beautiful soft Neo Brutalism design. Browse by category, save favorites, and find daily inspiration.",
-  keywords: ["quotes", "inspiration", "motivation", "neo brutalism", "clean design", "soft UI"],
+  title: "QuoteVerse",
+  description: "Discover inspiring quotes, save your favorites, and share wisdom.",
+  icons: {
+    icon: [
+      {
+        url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💬</text></svg>',
+        type: 'image/svg+xml',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
