@@ -13,26 +13,12 @@ interface Quote {
   category: string;
 }
 
-const CATEGORIES = [
-  { name: 'inspirational', color: 'bg-primary-light' },
-  { name: 'life', color: 'bg-secondary-light' },
-  { name: 'happiness', color: 'bg-accent-light' },
-  { name: 'love', color: 'bg-[rgb(255,182,193)]' },
-  { name: 'success', color: 'bg-success' },
-  { name: 'motivation', color: 'bg-[rgb(255,165,0)]' },
-  { name: 'wisdom', color: 'bg-purple' },
-  { name: 'humor', color: 'bg-secondary-light' },
-  { name: 'friendship', color: 'bg-success' },
-  { name: 'family', color: 'bg-peach' }
-];
-
 type SortOption = 'recent' | 'popular' | 'random';
 
 export default function Home() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [likedQuotes, setLikedQuotes] = useState<Set<string>>(new Set());
@@ -47,7 +33,7 @@ export default function Home() {
     if (savedBookmarks) setBookmarkedQuotes(new Set(JSON.parse(savedBookmarks)));
   }, []);
 
-  const fetchQuotes = async (category: string = '') => {
+  const fetchQuotes = async () => {
     setLoading(true);
     setError(null);
     
@@ -60,15 +46,27 @@ export default function Home() {
         return;
       }
 
-      const { data } = await axios.get(
-        `https://api.api-ninjas.com/v1/quotes${category ? `?category=${category}` : ''}`,
-        {
+      // Fetch multiple times to get variety since we can't filter by category
+      const responses = await Promise.all([
+        axios.get('https://api.api-ninjas.com/v1/quotes', {
           headers: { 'X-Api-Key': apiKey },
-        }
-      );
+        }),
+        axios.get('https://api.api-ninjas.com/v1/quotes', {
+          headers: { 'X-Api-Key': apiKey },
+        }),
+        axios.get('https://api.api-ninjas.com/v1/quotes', {
+          headers: { 'X-Api-Key': apiKey },
+        })
+      ]);
       
-      if (data && data.length > 0) {
-        setQuotes(data);
+      const allQuotes = [
+        ...responses[0].data,
+        ...responses[1].data,
+        ...responses[2].data
+      ];
+      
+      if (allQuotes.length > 0) {
+        setQuotes(allQuotes);
       } else {
         setError('No quotes received from API');
       }
@@ -103,16 +101,12 @@ export default function Home() {
         return;
       }
 
-      const randomCategory = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-      const { data } = await axios.get(
-        `https://api.api-ninjas.com/v1/quotes?category=${randomCategory.name}`,
-        {
-          headers: { 'X-Api-Key': apiKey },
-        }
-      );
+      const { data } = await axios.get('https://api.api-ninjas.com/v1/quotes', {
+        headers: { 'X-Api-Key': apiKey },
+      });
       
       if (data && data.length > 0) {
-        setQuotes(data.slice(0, 1));
+        setQuotes(data);
       } else {
         setError('No quotes received from API');
       }
@@ -127,12 +121,6 @@ export default function Home() {
   useEffect(() => {
     fetchQuotes();
   }, []);
-
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
-    setSearchQuery('');
-    fetchQuotes(category);
-  };
 
   const handleLikeToggle = (quoteText: string) => {
     const newLikes = new Set(likedQuotes);
@@ -160,7 +148,8 @@ export default function Home() {
     ? quotes.filter(
         (q) =>
           q.quote.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          q.author.toLowerCase().includes(searchQuery.toLowerCase())
+          q.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          q.category.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : quotes;
 
@@ -175,6 +164,9 @@ export default function Home() {
     }
     return 0;
   });
+
+  // Get unique categories from fetched quotes
+  const categories = Array.from(new Set(quotes.map(q => q.category))).sort();
 
   return (
     <div className="min-h-screen bg-background">
@@ -199,14 +191,25 @@ export default function Home() {
               Discover wisdom, find inspiration, share joy
             </p>
             
-            <button
-              onClick={fetchRandomQuote}
-              className="btn-primary inline-flex items-center gap-2 text-lg"
-              disabled={loading}
-            >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-              Random Quote
-            </button>
+            <div className="flex gap-3 justify-center flex-wrap">
+              <button
+                onClick={fetchRandomQuote}
+                className="btn-primary inline-flex items-center gap-2 text-lg"
+                disabled={loading}
+              >
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                Random Quote
+              </button>
+              
+              <button
+                onClick={fetchQuotes}
+                className="btn-outline inline-flex items-center gap-2 text-lg"
+                disabled={loading}
+              >
+                <Sparkles className="w-5 h-5" />
+                Load More Quotes
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -236,8 +239,7 @@ export default function Home() {
                       <li>Visit <a href="https://api-ninjas.com" target="_blank" rel="noopener" className="text-blue-600 underline">api-ninjas.com</a></li>
                       <li>Sign up for a free account</li>
                       <li>Get your API key from the dashboard</li>
-                      <li>Add it to <code className="bg-gray-100 px-2 py-1 rounded">.env.local</code> file</li>
-                      <li>Restart the development server</li>
+                      <li>Add it to environment variables</li>
                     </ol>
                   </div>
                 </div>
@@ -255,7 +257,7 @@ export default function Home() {
             <div className="mb-6">
               <input
                 type="text"
-                placeholder="Search quotes or authors..."
+                placeholder="Search quotes, authors, or categories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="input-soft-brutalism w-full text-lg"
@@ -294,35 +296,22 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Categories */}
-            <div>
-              <h2 className="text-lg font-bold mb-4 text-foreground">Browse by Category</h2>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => handleCategoryClick('')}
-                  className={`badge-soft-brutalism ${
-                    selectedCategory === '' 
-                      ? 'bg-foreground text-white' 
-                      : 'bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  All Quotes
-                </button>
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.name}
-                    onClick={() => handleCategoryClick(cat.name)}
-                    className={`badge-soft-brutalism capitalize ${
-                      selectedCategory === cat.name 
-                        ? `${cat.color} text-foreground` 
-                        : 'bg-white hover:bg-gray-50'
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
+            {/* Categories from fetched quotes */}
+            {categories.length > 0 && (
+              <div>
+                <h2 className="text-lg font-bold mb-4 text-foreground">Categories in Current Results</h2>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <span
+                      key={cat}
+                      className="badge-soft-brutalism bg-secondary-light text-foreground capitalize text-sm"
+                    >
+                      {cat}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       )}
@@ -357,16 +346,15 @@ export default function Home() {
               <div className="text-center py-20">
                 <div className="card-soft-brutalism inline-block p-12 bg-secondary-light">
                   <p className="text-2xl font-bold mb-4">No quotes found</p>
-                  <p className="text-foreground/70 mb-6">Try adjusting your search or filters</p>
+                  <p className="text-foreground/70 mb-6">Try adjusting your search or load more quotes</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
-                      setSelectedCategory('');
                       fetchQuotes();
                     }}
                     className="btn-primary"
                   >
-                    Reset Search
+                    Load Quotes
                   </button>
                 </div>
               </div>
